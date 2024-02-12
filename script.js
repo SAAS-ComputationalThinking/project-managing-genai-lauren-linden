@@ -2,6 +2,15 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+const bg = new Image();
+bg.src = 'flappybg.png';
+let bg1x=0;
+let bg1y=0;
+const pipe = new Image()
+pipe.src='pipe.png';
+const pipe2 = new Image()
+pipe2.src='pipe2.png';
+
 // Game variables
 let birdX = 50;
 let birdY = canvas.height / 3;
@@ -40,6 +49,11 @@ function gameLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         //ctx.fillStyle = 'tan';
         //ctx.fillRect(0,2/3*canvas.height,canvas.width,1/3*canvas.height)
+
+        // Draw the image on the canvas
+        ctx.drawImage(bg, bg1x, bg1y, canvas.width, canvas.height);
+        ctx.drawImage(bg, bg1x+canvas.width, bg1y, canvas.width, canvas.height);
+        bg1x-=0.1;
 
         // Draw pipes
         pipes.forEach(pipe => {
@@ -81,6 +95,7 @@ function gameLoop() {
 // Function to restart the game
 function restart() {
     if (gameOver) {
+        score=0;
         birdY = canvas.height / 3;
         velocity = 0;
         gameOver = false;
@@ -114,13 +129,18 @@ class Pipe {
     }
 
     draw() {
+  
+
         ctx.fillStyle = pipeColor;
         // Upper pipe
-        ctx.fillRect(this.x, 0, pipeWidth, this.gapY);
-        ctx.fillRect(this.x-(pipetopwidth-pipeWidth)/2, this.gapY-pipetopheight, pipetopwidth, pipetopheight);
+        ctx.drawImage(pipe2, this.x-(pipetopwidth-pipeWidth)/2, this.gapY-100, pipetopwidth, 100);
+        
+        //ctx.fillRect(this.x, 0, pipeWidth, this.gapY);
+        //ctx.fillRect(this.x-(pipetopwidth-pipeWidth)/2, this.gapY-pipetopheight, pipetopwidth, pipetopheight);
         // Lower pipe
-        ctx.fillRect(this.x, this.gapY + pipeGap, pipeWidth, canvas.height - (this.gapY + pipeGap));
-        ctx.fillRect(this.x-(pipetopwidth-pipeWidth)/2, this.gapY + pipeGap, pipetopwidth, pipetopheight);
+        ctx.drawImage(pipe, this.x-(pipetopwidth-pipeWidth)/2, this.gapY + pipeGap, pipetopwidth, 100);
+        //ctx.fillRect(this.x, this.gapY + pipeGap, pipeWidth, canvas.height - (this.gapY + pipeGap));
+        //ctx.fillRect(this.x-(pipetopwidth-pipeWidth)/2, this.gapY + pipeGap, pipetopwidth, pipetopheight);
     }
 
     offscreen() {
