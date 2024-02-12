@@ -2,6 +2,8 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+const birdy=new Image();
+birdy.src='flappybird.png';
 const bg = new Image();
 bg.src = 'flappybg.png';
 let bg1x=0;
@@ -63,8 +65,10 @@ function gameLoop() {
         });
 
         // Create bird
-        ctx.fillStyle = 'yellow';
-        ctx.fillRect(birdX, birdY, 10, 8); // Adjusted for the bird's size
+        //ctx.fillStyle = 'yellow';
+        //ctx.fillRect(birdX, birdY, 10, 8); // Adjusted for the bird's size
+        ctx.drawImage(birdy, birdX,birdY,30,30)
+
 
         // Spawn pipes
         if (frameCount % pipeInterval === 0) {
