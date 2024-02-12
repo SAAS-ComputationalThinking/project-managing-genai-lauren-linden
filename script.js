@@ -11,10 +11,13 @@ let gameOver = false;
 let pipes = [];
 const pipeGap = 50; // Gap between upper and lower pipes
 const pipeWidth = 30;
+const pipetopwidth = 40;
+const pipetopheight = 20
 const pipeColor = 'green';
 const pipeSpeed = 1;
 const pipeInterval = 150; // Interval between pipes
 var frameCount=0
+var score=0
 
 // main game loop
 function gameLoop() {
@@ -35,11 +38,14 @@ function gameLoop() {
 
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        //ctx.fillStyle = 'tan';
+        //ctx.fillRect(0,2/3*canvas.height,canvas.width,1/3*canvas.height)
 
         // Draw pipes
         pipes.forEach(pipe => {
             pipe.update();
             pipe.draw();
+            if (pipe.newPass(birdX)) score+=1;
         });
 
         // Create bird
@@ -54,14 +60,19 @@ function gameLoop() {
         // Remove offscreen pipes
         pipes = pipes.filter(pipe => !pipe.offscreen());
 
+        ctx.fillStyle = 'black';
+        ctx.font = '20px Arial';
+        ctx.fillText(score, canvas.width / 2 - 5, canvas.height / 2 - 50);
+
         if (!gameOver) {
             requestAnimationFrame(gameLoop);
         } else {
             // Display game over message and restart button
             ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.fillText('Game Over', canvas.width / 2 - 50, canvas.height / 2 - 10);
             ctx.font = '10px Arial';
-            ctx.fillText('Game Over', canvas.width / 2 - 60, canvas.height / 2 - 10);
-            ctx.fillText('Click to Restart', canvas.width / 2 - 60, canvas.height / 2 + 10);
+            ctx.fillText('Click to Restart', canvas.width / 2 - 35, canvas.height / 2 + 10);
         }
         frameCount+=1
     }
@@ -95,6 +106,7 @@ class Pipe {
     constructor() {
         this.x = canvas.width;
         this.gapY = Math.floor(Math.random() * (canvas.height - pipeGap - 130)) + 50; // Adjusted gap position
+        this.passed= false;
     }
 
     update() {
@@ -105,12 +117,24 @@ class Pipe {
         ctx.fillStyle = pipeColor;
         // Upper pipe
         ctx.fillRect(this.x, 0, pipeWidth, this.gapY);
+        ctx.fillRect(this.x-(pipetopwidth-pipeWidth)/2, this.gapY-pipetopheight, pipetopwidth, pipetopheight);
         // Lower pipe
         ctx.fillRect(this.x, this.gapY + pipeGap, pipeWidth, canvas.height - (this.gapY + pipeGap));
+        ctx.fillRect(this.x-(pipetopwidth-pipeWidth)/2, this.gapY + pipeGap, pipetopwidth, pipetopheight);
     }
 
     offscreen() {
         return this.x < -pipeWidth;
+    }
+
+    newPass(birdx){
+      if (!this.passed){
+        if (this.x<birdx){
+          this.passed=true;
+          return true;
+        }
+      }
+      return false;
     }
 
     hits(birdx,birdy) {
