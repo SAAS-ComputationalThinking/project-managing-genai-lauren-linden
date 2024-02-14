@@ -27,16 +27,18 @@ let gravity = 0.1;
 let velocity = 0;
 let gameOver = false; 
 let pipes = [];
+const birdHitWidth=10;
+const birdHitHeight=10;
 const birdWidth=21;
 const floorHeight= Math.floor(8/10*canvas.height);
 const birdHeight=12;
-const pipeGap = 50; // Gap between upper and lower pipes
+const pipeGap = 40; // Gap between upper and lower pipes
 const pipeWidth = 30;
 const pipetopwidth = 40;
 const pipetopheight = 20
 const pipeColor = 'green';
 const pipeSpeed = 1.5;
-const pipeInterval = 100; // Interval between pipes
+const pipeInterval = 70; // Interval between pipes
 var frameCount=0
 var score=0
 
@@ -72,13 +74,20 @@ function gameLoop() {
         if (!gameOver) bg1x=(bg1x-0.25+bgwidth)%(bgwidth);
         console.log(bg1x);
 
-        ctx.drawImage(birdy, Math.floor(birdX),Math.floor(birdY),birdWidth,birdHeight)
+        ctx.save();
+        ctx.translate(birdX + birdWidth / 2, birdY + birdHeight / 2);
+        ctx.rotate(velocity/4);
+        ctx.drawImage(birdy, -birdWidth / 2, -birdHeight / 2, birdWidth, birdHeight);
+        ctx.restore();
+
+        //ctx.fillRect(birdX+birdWidth/2-birdHitWidth/2,birdY+birdHeight/2-birdHitHeight/2,birdHitWidth,birdHitHeight) hitbox
         // Draw pipes
         pipes.forEach(pipe => {
             if (!gameOver) pipe.update();
             pipe.draw();
             if (pipe.newPass(birdX)) score+=1;
         });
+
         ctx.drawImage(flfloor,Math.floor(x+canvas.width),Math.floor(floorHeight),canvas.width,canvas.width*1/5)
         ctx.drawImage(flfloor,Math.floor(x),Math.floor(floorHeight),canvas.width,canvas.width*1/5)
         x=(x-pipeSpeed)%canvas.width;
@@ -179,9 +188,9 @@ class Pipe {
 
     hits(birdx,birdy) {
         return (
-            birdx + birdWidth >= this.x+4 && // Adjusted for bird's size
-            birdx <= this.x + pipeWidth-8 &&
-            (birdy < this.gapY || birdy + birdHeight > this.gapY + pipeGap) // Adjusted for bird's size
+            birdx + birdWidth/2+birdHitWidth/2 >= this.x+4 && // Adjusted for bird's size
+            birdx + birdWidth/2-birdHitWidth/2<= this.x + pipeWidth-8 &&
+            (birdy+birdHeight/2-birdHitHeight/2 < this.gapY || birdy + birdHeight/2 + birdHitHeight/2 > this.gapY + pipeGap) // Adjusted for bird's size
         );
     }
 }
