@@ -12,7 +12,8 @@ flfloor.src='flappyfloor.png';
 const bg = new Image();
 bg.src = 'flappybg.png';
 let bg1x=0;
-let bg1y=-1.9/10*canvas.height;
+let bgheight=8.5/10 * canvas.height;
+let bgwidth= bgheight*5/3;
 const pipe = new Image()
 pipe.src='pipe.png';
 const pipe2 = new Image()
@@ -27,20 +28,22 @@ let velocity = 0;
 let gameOver = false; 
 let pipes = [];
 const birdWidth=21;
-const floorHeight= 8/10*canvas.height;
+const floorHeight= Math.floor(8/10*canvas.height);
 const birdHeight=12;
 const pipeGap = 50; // Gap between upper and lower pipes
 const pipeWidth = 30;
 const pipetopwidth = 40;
 const pipetopheight = 20
 const pipeColor = 'green';
-const pipeSpeed = 1;
-const pipeInterval = 120; // Interval between pipes
+const pipeSpeed = 1.5;
+const pipeInterval = 100; // Interval between pipes
 var frameCount=0
 var score=0
 
 // main game loop
 function gameLoop() {
+    bgheight=Math.floor(8.1/10 * canvas.height);
+    bgwidth= Math.floor(bgheight*5/3);
     if (!gameOver) { // Check if the game is not over
         velocity += gravity;
         birdY += velocity;
@@ -62,19 +65,22 @@ function gameLoop() {
         //ctx.fillRect(0,2/3*canvas.height,canvas.width,1/3*canvas.height)
 
         // Draw the image on the canvas
-        ctx.drawImage(bg, bg1x, bg1y, canvas.width, canvas.height);
-        ctx.drawImage(bg, bg1x+canvas.width, bg1y, canvas.width, canvas.height);
-        if (!gameOver) bg1x-=0.15;
+        n=1+Math.ceil(canvas.width/bgwidth)
+        for (let i=0; i<n; i++){
+            ctx.drawImage(bg, Math.floor(bg1x+i*bgwidth-bgwidth), 0, bgwidth, bgheight);
+        }
+        if (!gameOver) bg1x=(bg1x-0.25+bgwidth)%(bgwidth);
+        console.log(bg1x);
 
-        ctx.drawImage(birdy, birdX,birdY,birdWidth,birdHeight)
+        ctx.drawImage(birdy, Math.floor(birdX),Math.floor(birdY),birdWidth,birdHeight)
         // Draw pipes
         pipes.forEach(pipe => {
             if (!gameOver) pipe.update();
             pipe.draw();
             if (pipe.newPass(birdX)) score+=1;
         });
-        ctx.drawImage(flfloor,x+canvas.width,floorHeight,canvas.width,canvas.width*1/5)
-        ctx.drawImage(flfloor,x,floorHeight,canvas.width,canvas.width*1/5)
+        ctx.drawImage(flfloor,Math.floor(x+canvas.width),Math.floor(floorHeight),canvas.width,canvas.width*1/5)
+        ctx.drawImage(flfloor,Math.floor(x),Math.floor(floorHeight),canvas.width,canvas.width*1/5)
         x=(x-pipeSpeed)%canvas.width;
 
         // Create bird
